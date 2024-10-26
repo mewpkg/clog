@@ -75,13 +75,13 @@ func skip(cur Level) bool {
 // --- [ debug ] ---------------------------------------------------------------
 
 // Debug outputs the given debug message to standard error.
-func Debug(arg any) {
+func Debug(args ...any) {
 	if skip(LevelDebug) {
 		return
 	}
 	prefix := getPrefix(term.MagentaBold)
 	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprint(os.Stderr, args...)
 	fmt.Fprintln(os.Stderr)
 }
 
@@ -109,13 +109,13 @@ func Debugln(args ...any) {
 // --- [ info ] ----------------------------------------------------------------
 
 // Info outputs the given info message to standard error.
-func Info(arg any) {
+func Info(args ...any) {
 	if skip(LevelInfo) {
 		return
 	}
 	prefix := getPrefix(term.CyanBold)
 	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprint(os.Stderr, args...)
 	fmt.Fprintln(os.Stderr)
 }
 
@@ -143,14 +143,14 @@ func Infoln(args ...any) {
 // --- [ warning ] -------------------------------------------------------------
 
 // Warn outputs the given warning message to standard error.
-func Warn(arg any) {
+func Warn(args ...any) {
 	if skip(LevelWarn) {
 		return
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprint(os.Stderr, args...)
 	fmt.Fprintln(os.Stderr)
 }
 
@@ -181,14 +181,14 @@ func Warnln(args ...any) {
 
 // Fatal outputs the given fatal error message to standard error and terminates
 // the application.
-func Fatal(arg any) {
+func Fatal(args ...any) {
 	if skip(LevelError) {
 		return
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprint(os.Stderr, args...)
 	fmt.Fprintln(os.Stderr)
 	os.Exit(1)
 }
