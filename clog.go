@@ -3,6 +3,7 @@ package clog
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"strings"
@@ -74,15 +75,23 @@ func skip(cur Level) bool {
 
 // --- [ debug ] ---------------------------------------------------------------
 
+// debugOutput specifies the output writer of debug messages.
+var debugOutput io.Writer = os.Stderr
+
+// SetDebugOutput sets the output writer of debug messages.
+func SetDebugOutput(w io.Writer) {
+	debugOutput = w
+}
+
 // Debug outputs the given debug message to standard error.
 func Debug(args ...any) {
 	if skip(LevelDebug) {
 		return
 	}
 	prefix := getPrefix(term.MagentaBold)
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(debugOutput, prefix)
+	fmt.Fprint(debugOutput, args...)
+	fmt.Fprintln(debugOutput)
 }
 
 // Debugf outputs the given debug message to standard error.
@@ -91,9 +100,9 @@ func Debugf(format string, args ...any) {
 		return
 	}
 	prefix := getPrefix(term.MagentaBold)
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintf(os.Stderr, format, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(debugOutput, prefix)
+	fmt.Fprintf(debugOutput, format, args...)
+	fmt.Fprintln(debugOutput)
 }
 
 // Debugln outputs the given debug message to standard error.
@@ -102,11 +111,19 @@ func Debugln(args ...any) {
 		return
 	}
 	prefix := getPrefix(term.MagentaBold)
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintln(os.Stderr, args...)
+	fmt.Fprint(debugOutput, prefix)
+	fmt.Fprintln(debugOutput, args...)
 }
 
 // --- [ info ] ----------------------------------------------------------------
+
+// infoOutput specifies the output writer of info messages.
+var infoOutput io.Writer = os.Stderr
+
+// SetInfoOutput sets the output writer of info messages.
+func SetInfoOutput(w io.Writer) {
+	infoOutput = w
+}
 
 // Info outputs the given info message to standard error.
 func Info(args ...any) {
@@ -114,9 +131,9 @@ func Info(args ...any) {
 		return
 	}
 	prefix := getPrefix(term.CyanBold)
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(infoOutput, prefix)
+	fmt.Fprint(infoOutput, args...)
+	fmt.Fprintln(infoOutput)
 }
 
 // Infof outputs the given info message to standard error.
@@ -125,9 +142,9 @@ func Infof(format string, args ...any) {
 		return
 	}
 	prefix := getPrefix(term.CyanBold)
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintf(os.Stderr, format, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(infoOutput, prefix)
+	fmt.Fprintf(infoOutput, format, args...)
+	fmt.Fprintln(infoOutput)
 }
 
 // Infoln outputs the given info message to standard error.
@@ -136,48 +153,64 @@ func Infoln(args ...any) {
 		return
 	}
 	prefix := getPrefix(term.CyanBold)
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintln(os.Stderr, args...)
+	fmt.Fprint(infoOutput, prefix)
+	fmt.Fprintln(infoOutput, args...)
 }
 
 // --- [ warning ] -------------------------------------------------------------
 
-// Warn outputs the given warning message to standard error.
+// warnOutput specifies the output writer of non-fatal warning messages.
+var warnOutput io.Writer = os.Stderr
+
+// SetWarnOutput sets the output writer of non-fatal warning messages.
+func SetWarnOutput(w io.Writer) {
+	warnOutput = w
+}
+
+// Warn outputs the given non-fatal warning message to standard error.
 func Warn(args ...any) {
 	if skip(LevelWarn) {
 		return
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(warnOutput, prefix)
+	fmt.Fprint(warnOutput, args...)
+	fmt.Fprintln(warnOutput)
 }
 
-// Warnf outputs the given warning message to standard error.
+// Warnf outputs the given non-fatal warning message to standard error.
 func Warnf(format string, args ...any) {
 	if skip(LevelWarn) {
 		return
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintf(os.Stderr, format, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(warnOutput, prefix)
+	fmt.Fprintf(warnOutput, format, args...)
+	fmt.Fprintln(warnOutput)
 }
 
-// Warnln outputs the given warning message to standard error.
+// Warnln outputs the given non-fatal warning message to standard error.
 func Warnln(args ...any) {
 	if skip(LevelWarn) {
 		return
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintln(os.Stderr, args...)
+	fmt.Fprint(warnOutput, prefix)
+	fmt.Fprintln(warnOutput, args...)
 }
 
 // --- [ error ] ---------------------------------------------------------------
+
+// errorOutput specifies the output writer of fatal error messages.
+var errorOutput io.Writer = os.Stderr
+
+// SetErrorOutput sets the output writer of fatal error messages.
+func SetErrorOutput(w io.Writer) {
+	errorOutput = w
+}
 
 // Fatal outputs the given fatal error message to standard error and terminates
 // the application.
@@ -187,9 +220,9 @@ func Fatal(args ...any) {
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprint(os.Stderr, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(errorOutput, prefix)
+	fmt.Fprint(errorOutput, args...)
+	fmt.Fprintln(errorOutput)
 	os.Exit(1)
 }
 
@@ -201,9 +234,9 @@ func Fatalf(format string, args ...any) {
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintf(os.Stderr, format, args...)
-	fmt.Fprintln(os.Stderr)
+	fmt.Fprint(errorOutput, prefix)
+	fmt.Fprintf(errorOutput, format, args...)
+	fmt.Fprintln(errorOutput)
 	os.Exit(1)
 }
 
@@ -215,8 +248,8 @@ func Fatalln(args ...any) {
 	}
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
-	fmt.Fprint(os.Stderr, prefix)
-	fmt.Fprintln(os.Stderr, args...)
+	fmt.Fprint(errorOutput, prefix)
+	fmt.Fprintln(errorOutput, args...)
 	os.Exit(1)
 }
 
