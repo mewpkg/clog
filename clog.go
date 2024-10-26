@@ -84,6 +84,7 @@ func Debug(arg any) {
 	prefix := getPrefix(term.MagentaBold)
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprintln(os.Stderr)
 }
 
 // Debugf outputs the given debug message to standard error.
@@ -94,6 +95,7 @@ func Debugf(format string, args ...any) {
 	prefix := getPrefix(term.MagentaBold)
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprintf(os.Stderr, format, args...)
+	fmt.Fprintln(os.Stderr)
 }
 
 // Debugln outputs the given debug message to standard error.
@@ -116,6 +118,7 @@ func Info(arg any) {
 	prefix := getPrefix(term.CyanBold)
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprintln(os.Stderr)
 }
 
 // Infof outputs the given info message to standard error.
@@ -126,6 +129,7 @@ func Infof(format string, args ...any) {
 	prefix := getPrefix(term.CyanBold)
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprintf(os.Stderr, format, args...)
+	fmt.Fprintln(os.Stderr)
 }
 
 // Infoln outputs the given info message to standard error.
@@ -149,6 +153,7 @@ func Warn(arg any) {
 	prefix += getFileLine()
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprintln(os.Stderr)
 }
 
 // Warnf outputs the given warning message to standard error.
@@ -160,6 +165,7 @@ func Warnf(format string, args ...any) {
 	prefix += getFileLine()
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprintf(os.Stderr, format, args...)
+	fmt.Fprintln(os.Stderr)
 }
 
 // Warnln outputs the given warning message to standard error.
@@ -185,6 +191,7 @@ func Fatal(arg any) {
 	prefix += getFileLine()
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprint(os.Stderr, arg)
+	fmt.Fprintln(os.Stderr)
 	os.Exit(1)
 }
 
@@ -198,6 +205,7 @@ func Fatalf(format string, args ...any) {
 	prefix += getFileLine()
 	fmt.Fprint(os.Stderr, prefix)
 	fmt.Fprintf(os.Stderr, format, args...)
+	fmt.Fprintln(os.Stderr)
 	os.Exit(1)
 }
 
