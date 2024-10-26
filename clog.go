@@ -37,9 +37,12 @@ var (
 	activeLevel = make(map[string]Level)
 )
 
-// SetPathLevel sets the log level of the given path at package or function
-// granularity (e.g. "github.com/user/repo/pkg" or
-// "github.com/user/repo/pkg.Func").
+// SetPathLevel sets the log level of the given path at package
+// (e.g. "github.com/user/repo/pkg") or function
+// (e.g. "github.com/user/repo/pkg.Func") granularity.
+//
+// For function ganularity of leaf node functions, function inlining may have to
+// be disabled (use the `//go:noinline` build tag).
 func SetPathLevel(path string, level Level) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -47,9 +50,8 @@ func SetPathLevel(path string, level Level) {
 }
 
 // PathLevel returns the current log level of the given path at package or
-// function granularity (e.g. "github.com/user/repo/pkg" or
-// "github.com/user/repo/pkg.Func"), and a boolean indicating whether the log
-// level was set.
+// function granularity, and a boolean indicating whether the log level was
+// set.
 func PathLevel(path string) (Level, bool) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -62,14 +64,10 @@ func PathLevel(path string) (Level, bool) {
 func skip(cur Level) bool {
 	pkgPath, funcPath := getQualifiedPaths()
 	if funcLevel, ok := PathLevel(funcPath); ok {
-		if funcLevel > cur {
-			return true
-		}
+		return funcLevel > cur
 	}
 	if pkgLevel, ok := PathLevel(pkgPath); ok {
-		if pkgLevel > cur {
-			return true
-		}
+		return pkgLevel > cur
 	}
 	return false
 }
