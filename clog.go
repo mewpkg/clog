@@ -75,11 +75,16 @@ func skip(cur Level) bool {
 
 // --- [ debug ] ---------------------------------------------------------------
 
+// outputMutex is a mutex for concurrent writes to output writers.
+var outputMutex sync.Mutex
+
 // debugOutput specifies the output writer of debug messages.
 var debugOutput io.Writer = os.Stderr
 
 // SetDebugOutput sets the output writer of debug messages.
 func SetDebugOutput(w io.Writer) {
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	debugOutput = w
 }
 
@@ -88,6 +93,8 @@ func Debug(args ...any) {
 	if skip(LevelDebug) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.MagentaBold)
 	fmt.Fprint(debugOutput, prefix)
 	fmt.Fprint(debugOutput, args...)
@@ -99,6 +106,8 @@ func Debugf(format string, args ...any) {
 	if skip(LevelDebug) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.MagentaBold)
 	fmt.Fprint(debugOutput, prefix)
 	fmt.Fprintf(debugOutput, format, args...)
@@ -110,6 +119,8 @@ func Debugln(args ...any) {
 	if skip(LevelDebug) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.MagentaBold)
 	fmt.Fprint(debugOutput, prefix)
 	fmt.Fprintln(debugOutput, args...)
@@ -122,6 +133,8 @@ var infoOutput io.Writer = os.Stderr
 
 // SetInfoOutput sets the output writer of info messages.
 func SetInfoOutput(w io.Writer) {
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	infoOutput = w
 }
 
@@ -130,6 +143,8 @@ func Info(args ...any) {
 	if skip(LevelInfo) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.CyanBold)
 	fmt.Fprint(infoOutput, prefix)
 	fmt.Fprint(infoOutput, args...)
@@ -141,6 +156,8 @@ func Infof(format string, args ...any) {
 	if skip(LevelInfo) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.CyanBold)
 	fmt.Fprint(infoOutput, prefix)
 	fmt.Fprintf(infoOutput, format, args...)
@@ -152,6 +169,8 @@ func Infoln(args ...any) {
 	if skip(LevelInfo) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.CyanBold)
 	fmt.Fprint(infoOutput, prefix)
 	fmt.Fprintln(infoOutput, args...)
@@ -164,6 +183,8 @@ var warnOutput io.Writer = os.Stderr
 
 // SetWarnOutput sets the output writer of non-fatal warning messages.
 func SetWarnOutput(w io.Writer) {
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	warnOutput = w
 }
 
@@ -172,6 +193,8 @@ func Warn(args ...any) {
 	if skip(LevelWarn) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(warnOutput, prefix)
@@ -184,6 +207,8 @@ func Warnf(format string, args ...any) {
 	if skip(LevelWarn) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(warnOutput, prefix)
@@ -196,6 +221,8 @@ func Warnln(args ...any) {
 	if skip(LevelWarn) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(warnOutput, prefix)
@@ -209,6 +236,8 @@ var errorOutput io.Writer = os.Stderr
 
 // SetErrorOutput sets the output writer of fatal error messages.
 func SetErrorOutput(w io.Writer) {
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	errorOutput = w
 }
 
@@ -218,6 +247,8 @@ func Fatal(args ...any) {
 	if skip(LevelError) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(errorOutput, prefix)
@@ -232,6 +263,8 @@ func Fatalf(format string, args ...any) {
 	if skip(LevelError) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(errorOutput, prefix)
@@ -246,6 +279,8 @@ func Fatalln(args ...any) {
 	if skip(LevelError) {
 		return
 	}
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	prefix := getPrefix(term.RedBold)
 	prefix += getFileLine()
 	fmt.Fprint(errorOutput, prefix)
