@@ -78,14 +78,24 @@ func skip(cur Level) bool {
 // outputMutex is a mutex for concurrent writes to output writers.
 var outputMutex sync.Mutex
 
-// debugOutput specifies the output writer of debug messages.
-var debugOutput io.Writer = os.Stderr
+var (
+	// debugOutput specifies the output writer of debug messages.
+	debugOutput io.Writer = os.Stderr
+
+	// debugUsePrefix specifies whether to use a prefix for debug messages.
+	debugUsePrefix = true
+)
 
 // SetDebugOutput sets the output writer of debug messages.
 func SetDebugOutput(w io.Writer) {
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
 	debugOutput = w
+}
+
+// SetDebugPrefix sets whether to use a prefix for debug messages.
+func SetDebugPrefix(usePrefix bool) {
+	debugUsePrefix = usePrefix
 }
 
 // Debug outputs the given debug message to standard error.
@@ -95,8 +105,10 @@ func Debug(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.MagentaBold)
-	fmt.Fprint(debugOutput, prefix)
+	if debugUsePrefix {
+		prefix := getPrefix(term.MagentaBold)
+		fmt.Fprint(debugOutput, prefix)
+	}
 	fmt.Fprint(debugOutput, args...)
 	fmt.Fprintln(debugOutput)
 }
@@ -108,8 +120,10 @@ func Debugf(format string, args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.MagentaBold)
-	fmt.Fprint(debugOutput, prefix)
+	if debugUsePrefix {
+		prefix := getPrefix(term.MagentaBold)
+		fmt.Fprint(debugOutput, prefix)
+	}
 	fmt.Fprintf(debugOutput, format, args...)
 	fmt.Fprintln(debugOutput)
 }
@@ -121,21 +135,33 @@ func Debugln(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.MagentaBold)
-	fmt.Fprint(debugOutput, prefix)
+	if debugUsePrefix {
+		prefix := getPrefix(term.MagentaBold)
+		fmt.Fprint(debugOutput, prefix)
+	}
 	fmt.Fprintln(debugOutput, args...)
 }
 
 // --- [ info ] ----------------------------------------------------------------
 
-// infoOutput specifies the output writer of info messages.
-var infoOutput io.Writer = os.Stderr
+var (
+	// infoOutput specifies the output writer of info messages.
+	infoOutput io.Writer = os.Stderr
+
+	// infoUsePrefix specifies whether to use a prefix for info messages.
+	infoUsePrefix = true
+)
 
 // SetInfoOutput sets the output writer of info messages.
 func SetInfoOutput(w io.Writer) {
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
 	infoOutput = w
+}
+
+// SetInfoPrefix sets whether to use a prefix for info messages.
+func SetInfoPrefix(usePrefix bool) {
+	infoUsePrefix = usePrefix
 }
 
 // Info outputs the given info message to standard error.
@@ -145,8 +171,10 @@ func Info(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.CyanBold)
-	fmt.Fprint(infoOutput, prefix)
+	if infoUsePrefix {
+		prefix := getPrefix(term.CyanBold)
+		fmt.Fprint(infoOutput, prefix)
+	}
 	fmt.Fprint(infoOutput, args...)
 	fmt.Fprintln(infoOutput)
 }
@@ -158,8 +186,10 @@ func Infof(format string, args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.CyanBold)
-	fmt.Fprint(infoOutput, prefix)
+	if infoUsePrefix {
+		prefix := getPrefix(term.CyanBold)
+		fmt.Fprint(infoOutput, prefix)
+	}
 	fmt.Fprintf(infoOutput, format, args...)
 	fmt.Fprintln(infoOutput)
 }
@@ -171,21 +201,33 @@ func Infoln(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.CyanBold)
-	fmt.Fprint(infoOutput, prefix)
+	if infoUsePrefix {
+		prefix := getPrefix(term.CyanBold)
+		fmt.Fprint(infoOutput, prefix)
+	}
 	fmt.Fprintln(infoOutput, args...)
 }
 
 // --- [ warning ] -------------------------------------------------------------
 
-// warnOutput specifies the output writer of non-fatal warning messages.
-var warnOutput io.Writer = os.Stderr
+var (
+	// warnOutput specifies the output writer of non-fatal warning messages.
+	warnOutput io.Writer = os.Stderr
+
+	// warnUsePrefix specifies whether to use a prefix for warning messages.
+	warnUsePrefix = true
+)
 
 // SetWarnOutput sets the output writer of non-fatal warning messages.
 func SetWarnOutput(w io.Writer) {
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
 	warnOutput = w
+}
+
+// SetWarnPrefix sets whether to use a prefix for warning messages.
+func SetWarnPrefix(usePrefix bool) {
+	warnUsePrefix = usePrefix
 }
 
 // Warn outputs the given non-fatal warning message to standard error.
@@ -195,9 +237,11 @@ func Warn(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.RedBold)
-	prefix += getFileLine()
-	fmt.Fprint(warnOutput, prefix)
+	if warnUsePrefix {
+		prefix := getPrefix(term.RedBold)
+		prefix += getFileLine()
+		fmt.Fprint(warnOutput, prefix)
+	}
 	fmt.Fprint(warnOutput, args...)
 	fmt.Fprintln(warnOutput)
 }
@@ -209,9 +253,11 @@ func Warnf(format string, args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.RedBold)
-	prefix += getFileLine()
-	fmt.Fprint(warnOutput, prefix)
+	if warnUsePrefix {
+		prefix := getPrefix(term.RedBold)
+		prefix += getFileLine()
+		fmt.Fprint(warnOutput, prefix)
+	}
 	fmt.Fprintf(warnOutput, format, args...)
 	fmt.Fprintln(warnOutput)
 }
@@ -223,22 +269,34 @@ func Warnln(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.RedBold)
-	prefix += getFileLine()
-	fmt.Fprint(warnOutput, prefix)
+	if warnUsePrefix {
+		prefix := getPrefix(term.RedBold)
+		prefix += getFileLine()
+		fmt.Fprint(warnOutput, prefix)
+	}
 	fmt.Fprintln(warnOutput, args...)
 }
 
 // --- [ error ] ---------------------------------------------------------------
 
-// errorOutput specifies the output writer of fatal error messages.
-var errorOutput io.Writer = os.Stderr
+var (
+	// errorOutput specifies the output writer of fatal error messages.
+	errorOutput io.Writer = os.Stderr
+
+	// errorUsePrefix specifies whether to use a prefix for error messages.
+	errorUsePrefix = true
+)
 
 // SetErrorOutput sets the output writer of fatal error messages.
 func SetErrorOutput(w io.Writer) {
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
 	errorOutput = w
+}
+
+// SetErrorPrefix sets whether to use a prefix for error messages.
+func SetErrorPrefix(usePrefix bool) {
+	errorUsePrefix = usePrefix
 }
 
 // Fatal outputs the given fatal error message to standard error and terminates
@@ -249,9 +307,11 @@ func Fatal(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.RedBold)
-	prefix += getFileLine()
-	fmt.Fprint(errorOutput, prefix)
+	if errorUsePrefix {
+		prefix := getPrefix(term.RedBold)
+		prefix += getFileLine()
+		fmt.Fprint(errorOutput, prefix)
+	}
 	fmt.Fprint(errorOutput, args...)
 	fmt.Fprintln(errorOutput)
 	os.Exit(1)
@@ -265,9 +325,11 @@ func Fatalf(format string, args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.RedBold)
-	prefix += getFileLine()
-	fmt.Fprint(errorOutput, prefix)
+	if errorUsePrefix {
+		prefix := getPrefix(term.RedBold)
+		prefix += getFileLine()
+		fmt.Fprint(errorOutput, prefix)
+	}
 	fmt.Fprintf(errorOutput, format, args...)
 	fmt.Fprintln(errorOutput)
 	os.Exit(1)
@@ -281,9 +343,11 @@ func Fatalln(args ...any) {
 	}
 	outputMutex.Lock()
 	defer outputMutex.Unlock()
-	prefix := getPrefix(term.RedBold)
-	prefix += getFileLine()
-	fmt.Fprint(errorOutput, prefix)
+	if errorUsePrefix {
+		prefix := getPrefix(term.RedBold)
+		prefix += getFileLine()
+		fmt.Fprint(errorOutput, prefix)
+	}
 	fmt.Fprintln(errorOutput, args...)
 	os.Exit(1)
 }
