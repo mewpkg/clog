@@ -463,6 +463,9 @@ func getPkgName(name string) string {
 	if pos != -1 {
 		name = name[:pos]
 	}
+	if name == "main" && len(mainPrefixName) > 0 {
+		return mainPrefixName
+	}
 	return name
 }
 
@@ -491,4 +494,12 @@ func getFuncName(name string) string {
 		name = name[pos+1:]
 	}
 	return name
+}
+
+// mainPrefixName specifies the prefix name used for the 'main' package.
+var mainPrefixName string
+
+// SetMainPrefixName sets the prefix name used for the 'main' package.
+func SetMainPrefixName(name string) {
+	mainPrefixName = name
 }
