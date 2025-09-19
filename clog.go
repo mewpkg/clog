@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"sync"
@@ -51,13 +52,23 @@ func SetPathLevel(path string, level Level) {
 }
 
 // PathLevel returns the current log level of the given path at package or
-// function granularity, and a boolean indicating whether the log level was
-// set.
+// function granularity (or a parent directory thereof), and a boolean
+// indicating whether the log level was set.
 func PathLevel(path string) (Level, bool) {
 	mu.Lock()
 	defer mu.Unlock()
-	level, ok := activeLevel[path]
-	return level, ok
+	for {
+		if level, ok := activeLevel[path]; ok {
+			return level, true
+		}
+		// check if path level is specified for parent directory.
+		dir := filepath.Dir(path)
+		if len(dir) == 0 || dir == path {
+			break
+		}
+		path = dir
+	}
+	return 0, false
 }
 
 // skip reports whether to skip log output of the given log level for the
@@ -71,6 +82,14 @@ func skip(cur Level) bool {
 		return pkgLevel > cur
 	}
 	return false
+}
+
+// mainPrefixName specifies the prefix name used for the 'main' package.
+var mainPrefixName string
+
+// SetMainPrefixName sets the prefix name used for the 'main' package.
+func SetMainPrefixName(name string) {
+	mainPrefixName = name
 }
 
 // --- [ debug ] ---------------------------------------------------------------
@@ -494,12 +513,4 @@ func getFuncName(name string) string {
 		name = name[pos+1:]
 	}
 	return name
-}
-
-// mainPrefixName specifies the prefix name used for the 'main' package.
-var mainPrefixName string
-
-// SetMainPrefixName sets the prefix name used for the 'main' package.
-func SetMainPrefixName(name string) {
-	mainPrefixName = name
 }
